@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Skill Navigator - Career Intelligence Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons for visual enhancements -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <div class="background-decorations">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <header class="app-header">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <i class="fa-solid fa-compass-drafting"></i>
+            </div>
+            <div>
+                <h1>AI Skill Navigator</h1>
+                <p class="subtitle">Personalized Career Pathway & Resume Intelligence</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+            <span class="version-tag">v2.0 Web</span>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- Sidebar Column: Inputs and General Metrics -->
+        <section class="dashboard-sidebar">
+            <!-- Card 1: Resume Upload / Input -->
+            <div class="glass-card upload-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <h2>1. Resume Source</h2>
+                </div>
+                <div class="card-content">
+                    <div id="drop-zone" class="upload-drop-zone">
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        <p class="upload-text">Drag & drop your resume PDF here</p>
+                        <p class="upload-or">or</p>
+                        <label for="pdf-file-input" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-folder-open"></i> Browse Files
+                        </label>
+                        <input type="file" id="pdf-file-input" accept="application/pdf" style="display: none;">
+                        <span id="file-name-display" class="file-name-info"></span>
+                    </div>
+
+                    <div class="textarea-divider">
+                        <span>OR PASTE TEXT FALLBACK</span>
+                    </div>
+
+                    <div class="text-input-wrapper">
+                        <textarea id="raw-text-input" placeholder="Paste your resume text content here directly if PDF parsing is unavailable..." rows="5"></textarea>
+                    </div>
+                    
+                    <button id="analyze-btn" class="btn btn-accent w-full mt-3">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Run AI Analysis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 2: ATS Score Metric -->
+            <div class="glass-card ats-metric-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <h2>Overall ATS Score</h2>
+                </div>
+                <div class="card-content centered-flex">
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" width="160" height="160">
+                            <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.06)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                            <circle class="progress-ring__circle" stroke="url(#ats-gradient)" stroke-width="12" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80"/>
+                            <defs>
+                                <linearGradient id="ats-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#00f2fe"/>
+                                    <stop offset="100%" stop-color="#4facfe"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="progress-ring-text">
+                            <span id="ats-percentage-display">0%</span>
+                            <span class="label">Skill Coverage</span>
+                        </div>
+                    </div>
+                    <div class="ats-insights mt-3">
+                        <p id="ats-rating-status" class="ats-status">Upload resume to calculate</p>
+                        <p class="ats-explanation">Based on matches against the core database of 26 technical skill domains.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Column: Detailed Analysis & Recommendations -->
+        <section class="dashboard-main-content">
+            <!-- Top Metric Banner: Quick Stats -->
+            <div class="stats-row">
+                <div class="glass-card stat-box">
+                    <span class="label">Detected Skills</span>
+                    <span id="stat-skills-count" class="value">0</span>
+                </div>
+                <div class="glass-card stat-box">
+                    <span class="label">Job Roles Evaluated</span>
+                    <span class="value">5</span>
+                </div>
+                <div class="glass-card stat-box">
+                    <span class="label">Current Target Role</span>
+                    <span id="stat-target-role" class="value text-accent">-</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Detected Skills Manager -->
+            <div class="glass-card skills-card">
+                <div class="card-header justify-between">
+                    <div class="flex-align">
+                        <i class="fa-solid fa-tags text-cyan"></i>
+                        <h2>2. Detected Technical Skills</h2>
+                    </div>
+                    <div class="skills-counter-badge" id="skills-count-badge">0 matched</div>
+                </div>
+                <div class="card-content">
+                    <p class="section-hint">Review, add, or delete skills to test different career scenarios. Changes update all scores in real time.</p>
+                    
+                    <div id="skills-container" class="tags-cloud">
+                        <div class="no-skills-msg">No skills identified yet. Parse a resume or add skills below manually.</div>
+                    </div>
+
+                    <div class="add-skill-form">
+                        <div class="input-group">
+                            <input type="text" id="new-skill-input" placeholder="Type a skill (e.g. pytorch, docker, git)..." list="skills-suggestions">
+                            <button id="add-skill-btn" class="btn btn-secondary">
+                                <i class="fa-solid fa-plus"></i> Add Skill
+                            </button>
+                        </div>
+                        <datalist id="skills-suggestions">
+                            <!-- Populated dynamically via JS -->
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Recommended Roles & Career Matches -->
+            <div class="glass-card recommendations-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-briefcase text-purple"></i>
+                    <h2>3. Job Role Recommendations</h2>
+                </div>
+                <div class="card-content">
+                    <p class="section-hint">Select a job role as your target pathway to generate its personalized learning roadmap below.</p>
+                    <div id="roles-grid" class="roles-layout">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Split Panel: Job Description Matcher and Roadmap -->
+            <div class="split-panel-layout">
+                <!-- Card 5: Real-time JD Matcher -->
+                <div class="glass-card jd-matcher-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-magnifying-glass-chart text-orange"></i>
+                        <h2>4. Job Description Matcher</h2>
+                    </div>
+                    <div class="card-content">
+                        <p class="section-hint">Paste a specific job description to test compatibility against your resume skills.</p>
+                        
+                        <div class="textarea-wrapper">
+                            <textarea id="jd-text-input" placeholder="Paste target Job Description here (e.g. 'Seeking a Software Engineer experienced in python, sql, and machine learning...')" rows="5"></textarea>
+                        </div>
+
+                        <div class="jd-score-container mt-3">
+                            <div class="jd-score-header justify-between">
+                                <span>JD Match Rate:</span>
+                                <strong id="jd-match-rate-value">0%</strong>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div id="jd-match-progress-bar" class="progress-bar-fill orange-gradient" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="jd-skills-breakdown mt-3">
+                            <div class="breakdown-col">
+                                <span class="lbl"><i class="fa-solid fa-circle-check text-success"></i> Matched Skills</span>
+                                <div id="jd-matched-tags" class="tags-cloud mini-tags">
+                                    <span class="empty-text">None</span>
+                                </div>
+                            </div>
+                            <div class="breakdown-col mt-2">
+                                <span class="lbl"><i class="fa-solid fa-circle-xmark text-danger"></i> Missing Skills</span>
+                                <div id="jd-missing-tags" class="tags-cloud mini-tags">
+                                    <span class="empty-text">None</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Interactive Learning Roadmap -->
+                <div class="glass-card roadmap-card">
+                    <div class="card-header justify-between">
+                        <div class="flex-align">
+                            <i class="fa-solid fa-map-signs text-accent"></i>
+                            <h2>5. Skill Navigator Roadmap</h2>
+                        </div>
+                        <button id="download-report-btn" class="btn btn-accent btn-sm" disabled>
+                            <i class="fa-solid fa-file-pdf"></i> Save PDF Report
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <p class="section-hint">Personalized learning path targeting your missing skills for <span id="roadmap-target-role-name" class="highlight-text">-</span>.</p>
+                        
+                        <div id="roadmap-timeline" class="roadmap-timeline-flow">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>&copy; 2026 AI Skill Navigator. Built with modern, secure client-side intelligence. Resumes are processed locally in your browser.</p>
+    </footer>
+
+    <!-- PDF.js library CDN (Version 3.4.120) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <!-- jsPDF library CDN (Version 2.5.1) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Main Script Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
